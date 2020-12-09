@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace CleanCodeLabb3_Pizza
+namespace CleanCodeLabb3_Pizzeria
 {
     class DisplayText
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CleanCodeLabb3_Pizza
+namespace CleanCodeLabb3_Pizzeria
 {
     class Program
     {
