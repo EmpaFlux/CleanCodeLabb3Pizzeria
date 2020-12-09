@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleanCodeLabb3-Pizzeria", "CleanCodeLabb3-Pizzeria.csproj", "{B53078DF-3711-46D3-A56A-54133C5FEA4F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleanCodeLabb3-Pizzeria Tests", "..\CleanCodeLabb3-Pizza Tests\CleanCodeLabb3-Pizzeria Tests.csproj", "{1D1BB480-3850-4E3E-92BF-F05415AFF375}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleanCodeLabb3-Pizzeria Tests", "..\CleanCodeLabb3-Pizzeria Tests\CleanCodeLabb3-Pizzeria Tests.csproj", "{AB47B39A-301B-477D-96D1-3006A761A118}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{B53078DF-3711-46D3-A56A-54133C5FEA4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B53078DF-3711-46D3-A56A-54133C5FEA4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B53078DF-3711-46D3-A56A-54133C5FEA4F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1D1BB480-3850-4E3E-92BF-F05415AFF375}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1D1BB480-3850-4E3E-92BF-F05415AFF375}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1D1BB480-3850-4E3E-92BF-F05415AFF375}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1D1BB480-3850-4E3E-92BF-F05415AFF375}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB47B39A-301B-477D-96D1-3006A761A118}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB47B39A-301B-477D-96D1-3006A761A118}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB47B39A-301B-477D-96D1-3006A761A118}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB47B39A-301B-477D-96D1-3006A761A118}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
