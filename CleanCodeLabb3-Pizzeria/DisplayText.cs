@@ -5,100 +5,134 @@ using System.Text;
 
 namespace CleanCodeLabb3_Pizzeria
 {
-    class DisplayText
+    public class DisplayText
     {
-        private static List<string> order = new List<string>();
-        static List<string> inventory = new List<string>()
+        public List<string> currentOrder = new List<string>();
+        List<string> inventory = new List<string>()
         {
             "Pizza 1",
             "Pizza 2",
             "Pizza 1",
             "Sprite"
         };
+        public List<List<string>> orders = new List<List<string>>();
+        IConsole _console;
 
-        public static void DisplayMenu()
+        public DisplayText(IConsole console)
         {
-            bool handlingOrder = true;
-            while (handlingOrder)
+            _console = console;
+        }
+
+        public void DisplayMenu()
+        {
+            _console.Clear();
+            Console.WriteLine("Select the desired product:");
+            foreach (var product in new List<string> { "1: Pizza 1", "2: Pizza 2", "3: Sprite" })
             {
-                Console.WriteLine("Select the desired product:");
-                foreach (var product in new List<string> { "1: Pizza 1", "2: Pizza 2", "3: Sprite", "", "4: Finish order", "", "5: Check inventory" })
+                if (inventory.Contains(product.Substring(3)))
                 {
                     Console.WriteLine(product);
                 }
-                Console.WriteLine();
-                Console.WriteLine("Current order items:");
+            }
+            Console.WriteLine("4: Finish order");
+            Console.WriteLine("5: Cancel order");
+            Console.WriteLine("6: View current orders");
+            Console.WriteLine();
+            Console.WriteLine("Current order items:");
+            foreach (var product in currentOrder)
+            {
+                Console.WriteLine(product);
+            }
+            switch (Console.ReadLine())
+            {
+                case "1":
+                    AddItemToOrder("Pizza 1");
+                    break;
+                case "2":
+                    AddItemToOrder("Pizza 2");
+                    break;
+                case "3":
+                    AddItemToOrder("Sprite");
+                    break;
+                case "4":
+                    FinishOrder();
+                    break;
+                case "5":
+                    currentOrder.Clear();
+                    SwitchMenu();
+                    break;
+                case "6":
+                    ViewOrders();
+                    break;
+                default:
+                    _console.Clear();
+                    Console.WriteLine("Try again");
+                    _console.ReadKey();
+                    DisplayMenu();
+                    break;
+            }
+        }
+
+        private void ViewOrders()
+        {
+            _console.Clear();
+            Console.WriteLine("Orders:");
+            foreach (var order in orders)
+            {
                 foreach (var product in order)
                 {
                     Console.WriteLine(product);
                 }
-                switch (Console.ReadKey().KeyChar)
-                {
-                    case '1':
-                        order.Add("Pizza 1");
-                        break;
-                    case '2':
-                        order.Add("Pizza 2");
-                        break;
-                    case '3':
-                        order.Add("Sprite");
-                        break;
-                    case '4':
-                        handlingOrder = false;
-                        Console.Clear();
-                        Console.WriteLine("The complete order:");
-                        foreach (var product in order)
-                        {
-                            Console.WriteLine(product);
-                        }
-                        Console.ReadKey();
-                        order.Clear();
-                        break;
-                    case '5':
-                        handlingOrder = false;
-                        break;
-                    default:
-                        Console.WriteLine();
-                        Console.WriteLine("Inte bra");
-                        Console.ReadKey();
-                        break;
-                }
-                Console.Clear();
+                Console.WriteLine();
             }
+            _console.ReadKey();
             SwitchMenu();
-            Console.ReadKey();
         }
-        static void SwitchMenu()
+
+        private void FinishOrder()
         {
-            Console.WriteLine("New order?");
-            foreach (var product in new List<string> { "1: Yes", "2: No, finish", "3: View inventory", "4: View Pizzas in orders" })
+            List<string> tempOrder = new List<string>();
+            foreach (var product in currentOrder)
+            {
+                tempOrder.Add(product);
+            }
+            orders.Add(tempOrder);
+            _console.Clear();
+            Console.WriteLine("The complete order:");
+            foreach (var product in currentOrder)
             {
                 Console.WriteLine(product);
             }
-            switch (Console.ReadKey().KeyChar)
+            _console.ReadKey();
+            currentOrder.Clear();
+            SwitchMenu();
+        }
+
+        private void AddItemToOrder(string item)
+        {
+            currentOrder.Add(item);
+            DisplayMenu();
+        }
+
+        private void SwitchMenu()
+        {
+            _console.Clear();
+            Console.WriteLine("Where to now?");
+            Console.WriteLine("1: New order");
+            Console.WriteLine("2: Shut down");
+            switch (Console.ReadLine())
             {
-                case '1':
-                    Console.Clear();
+                case "1":
                     DisplayMenu();
                     break;
-                case '2':
-                    break;
-                case '3':
-                    Console.Clear();
-                    foreach (var product in inventory)
-                    {
-                        Console.WriteLine(product);
-                    }
-                    Console.ReadKey();
-                    break;
-                case '4':
-                    Console.Clear();
+                case "2":
                     break;
                 default:
                     Console.WriteLine();
-                    Console.WriteLine("Inte bra");
-                    Console.ReadKey();
-                    Console.Clear();
+                    Console.WriteLine("Try again");
+                    _console.ReadKey();
+                    _console.Clear();
+                    SwitchMenu();
                     break;
             }
         }
