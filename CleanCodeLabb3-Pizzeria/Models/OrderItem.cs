@@ -4,11 +4,31 @@ using System.Text;
 
 namespace CleanCodeLabb3_Pizzeria.Models
 {
-    public enum OrderItemType { Pizza, Topping, Drink }
-
     public class OrderItem
     {
         private string _name;
-        public string Name { get => _name; set => _name = value; }
+        private OrderItemType _type;
+
+        public OrderItem()
+        {
+        }
+
+        public OrderItem(OrderItemType type, string name)
+        {
+            _type = type;
+            _name = name;
+        }
+
+        public OrderItemType Type
+        {
+            get { return _type; }
+            set { _type = value; }
+        }
+        public string Name
+        {
+            get { return _name; }
+            set { _name = value; }
+        }
+
     }
 }

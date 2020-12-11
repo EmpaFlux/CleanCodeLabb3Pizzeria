@@ -12,7 +12,7 @@ namespace CleanCodeLabb3_Pizza_Tests
         public void PlaceOrder_ListOfOrderables_ReturnsListOfStringsWithAllToppingsProductsAndPrice()
         {
             //Arrange
-            List<OrderItem> order = TestData.GetOrder();
+            List<Product> order = TestData.GetOrder();
             var expected = new List<List<string>>() {
                 new List<string>() { "Margerita", "Cola" },
                 new List<string>() { "tomato sauce", "cheese", "pineapple" },
