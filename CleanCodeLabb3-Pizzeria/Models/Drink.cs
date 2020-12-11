@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CleanCodeLabb3_Pizzeria.Models
 {
-    public class Drink : Storable
+    public class Drink : OrderItem
     {
         public Drink(string name, double price)
         {

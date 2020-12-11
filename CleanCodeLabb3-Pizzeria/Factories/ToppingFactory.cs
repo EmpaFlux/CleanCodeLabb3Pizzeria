@@ -1,34 +1,37 @@
 ﻿using CleanCodeLabb3_Pizzeria.Models;
-using CleanCodeLabb3_Pizzeria.Models.Toppings;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CleanCodeLabb3_Pizzeria.Factories
 {
-    public sealed class ToppingFactory
+    public sealed class ToppingFactory: IPizzeriaFactory<Topping>
     {
-        private string _itemName;
         private ToppingFactory() { }
-        public static ToppingFactory ToppingFactoryInstance { get; } = new ToppingFactory();
-        public OrderItem Get(string itemName)
+        public static ToppingFactory Instance { get; } = new ToppingFactory();
+
+        public Topping Get(string toppingName)
         {
-            _itemName = itemName;
-            return GetTopping();
+            return GetTopping(toppingName);
         }
 
-        private Topping GetTopping()
+        public List<Topping> Get(List<string> toppingNames)
         {
-            Topping topping = new Topping() { Name = _itemName };
+            var toppings = new List<Topping>();
+            toppingNames.ForEach(name => toppings.Add(GetTopping(name)));
+            return toppings;
+        }
 
-            switch (_itemName)
+        private Topping GetTopping(string toppingName)
+        {
+            Topping topping = new Topping() { Name = toppingName };
+
+            switch (toppingName)
             {
                 case "artichoke":
-                    topping.PriceGroup = ExtraToppingPriceGroup.B ;
+                    topping.PriceGroup = ExtraToppingPriceGroup.B;
                     break;
                 case "cheese":
                     topping.PriceGroup = ExtraToppingPriceGroup.None;
-                        break;
+                    break;
                 case "cilantro":
                     topping.PriceGroup = ExtraToppingPriceGroup.C;
                     break;

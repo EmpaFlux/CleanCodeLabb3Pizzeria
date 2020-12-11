@@ -7,7 +7,7 @@ using System.Text;
 
 namespace CleanCodeLabb3_Pizzeria.Factories
 {
-    public sealed class OrderItemFactory: IPizzeriaFactory
+    public sealed class OrderItemFactory: IPizzeriaFactory<OrderItem>
     {
         private string _itemName;
         

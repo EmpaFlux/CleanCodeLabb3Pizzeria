@@ -5,8 +5,9 @@ using System.Text;
 
 namespace CleanCodeLabb3_Pizzeria.Factories
 {
-    internal interface IPizzeriaFactory
+    internal interface IPizzeriaFactory<T>
     {
-        public OrderItem Get(string itemName);
+        T Get(string itemName);
+        List<T> Get(List<string> itemNames);
     }
 }
