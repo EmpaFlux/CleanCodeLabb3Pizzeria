@@ -13,12 +13,21 @@ namespace CleanCodeLabb3_Pizzeria.Models
 
         public OrderSummary(List<OrderItem> orderItems)
         {
-            var incomingOrder = orderItems;
-            var pizzas = orderItems.OfType<Pizza>().ToList().ForEach( (x) => x.Name) );
-            var names = pizzas.ForEach()
-            var toppings = orderItems.OfType<Topping>().ToList();
-            var price = new List<string>();
-            var orderTally = new List<List<string>>();
+
+            //Pizza and drink names
+            var orderItemNames = new List<string>();
+            orderItems.ForEach(item => orderItemNames.Add(item.Name));
+
+            //Topping names
+            var toppingNames = new List<string>();
+            var pizzas = orderItems.OfType<Pizza>().ToList();
+            pizzas.ForEach(pizza => pizza.StandardToppings.ForEach(topping => toppingNames.Add(topping.Name)));
+            pizzas.ForEach(pizza => pizza.ExtraToppings.ForEach(topping => toppingNames.Add(topping.Name)));
+
+            //Price for all pizzas, drinks and extra toppings           
+            double totalPrice = 0;
+            orderItems.ForEach(item => totalPrice += item.Price);
+            pizzas.ForEach(pizza => pizza.ExtraToppings.ForEach(topping => totalPrice += topping.ExtraToppingPrice));
         }
 
         public List<List<string>> Summary { get => _summary; set => _summary = value; }
