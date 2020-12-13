@@ -6,15 +6,18 @@ namespace CleanCodeLabb3_Pizzeria.Models
 
     public class Pizza : Product
     {
-        private OrderItemType _type = OrderItemType.Pizza;
         private List<Topping> _standardToppings = new List<Topping>();
         private List<Topping> _extraToppings = new List<Topping>();
         private PizzaPriceGroup _priceGroup;
 
+        public Pizza()
+        {
+            Type = OrderItemType.Pizza;
+        }
+
         public List<Topping> StandardToppings { get => _standardToppings; set => _standardToppings = value; }
         public List<Topping> ExtraToppings { get => _extraToppings; set => _standardToppings = value; }
         public PizzaPriceGroup PriceGroup { get => _priceGroup; set => _priceGroup = value; }
-        public OrderItemType Type { get => _type; }
         public override double GetPrice() { return (double)_priceGroup; }
     }
 }

@@ -51,7 +51,7 @@ namespace CleanCodeLabb3_Pizzeria.Factories
                     topping.PriceGroup = ExtraToppingPriceGroup.None;
                     break;
                 case "mushroom":
-                    topping.PriceGroup = ExtraToppingPriceGroup.None;
+                    topping.PriceGroup = ExtraToppingPriceGroup.A;
                     break;
                 case "onion":
                     topping.PriceGroup = ExtraToppingPriceGroup.A;

@@ -10,7 +10,10 @@ namespace CleanCodeLabb3_Pizzeria.Models
         private OrderItemType _type = OrderItemType.Drink;
         private DrinkPriceGroup _drinkPriceGroup;
 
-        public OrderItemType Type { get => _type; }
+        public Drink()
+        {
+            Type = OrderItemType.Drink;
+        }
 
         public DrinkPriceGroup PriceGroup { get => _drinkPriceGroup; set => _drinkPriceGroup = value; }
 

@@ -5,6 +5,11 @@
     public class Topping : Product
     {
         private ExtraToppingPriceGroup _extraToppingPriceGroup;
+
+        public Topping()
+        {
+            Type = OrderItemType.Topping;
+        }
        
         public ExtraToppingPriceGroup PriceGroup { get => _extraToppingPriceGroup; set => _extraToppingPriceGroup = value; }
 

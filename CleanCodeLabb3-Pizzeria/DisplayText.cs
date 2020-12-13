@@ -2,103 +2,218 @@
 using CleanCodeLabb3_Pizzeria.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
+using System.Linq;
 
 namespace CleanCodeLabb3_Pizzeria
 {
     public class DisplayText
     {
-        public List<OrderItem> currentOrder = new List<OrderItem>();
-        public List<List<OrderItem>> orders = new List<List<OrderItem>>();
+        List<Order> _orders;
+        Order _currentOrder;
+        List<Product> _currentOrderItems;
         IConsole _console;
-        PizzaFactory _pizzaFactory = PizzaFactory.PizzaFactoryInstance;
+        PizzaFactory _pizzaFactory;
+        ProductFactory _productFactory;
+        List<Product> _menu;
 
         public DisplayText(IConsole console)
         {
+            _orders = new List<Order>();
+            _currentOrder = new Order();
+            _currentOrderItems = _currentOrder.ProductItems;
             _console = console;
+            _pizzaFactory = PizzaFactory.Instance;
+            _productFactory = ProductFactory.Instance;
+            _menu = Menu.Instance.AllMenuItems;
         }
 
         public void DisplayMenu()
         {
             _console.Clear();
-            DisplayAvailableItemsInMenu();
-            Console.WriteLine();
-            Console.WriteLine("q: Finish order");
-            Console.WriteLine("w: Cancel order");
-            Console.WriteLine("e: View current orders");
-            Console.WriteLine();
-            Console.WriteLine("Current order items:");
-            foreach (var product in currentOrder)
+            DisplayAvailableProductsInMenu();
+            DisplayOptions();
+            DisplayCurrentOrder();
+            var input = Console.ReadLine();
+            if (MatchesPizzaOrDrink(input, out int menuIndex))
             {
-                Console.WriteLine(product.Name);
+                ActOnValidNumberInput(menuIndex);
             }
-            switch (Console.ReadLine())
+            else
             {
-                case "1":
-                    AddItemToOrder(_pizzaFactory.Get("Hawaii"));
-                    break;
-                case "2":
-                    AddItemToOrder(_pizzaFactory.Get("Kebab pizza"));
-                    break;
-                case "3":
-                    AddItemToOrder(_pizzaFactory.Get("Margerita"));
-                    break;
-                case "4":
-                    AddItemToOrder(_pizzaFactory.Get("Quatro Stagioni"));
+                ActOnLetterInput(input);
+            }
+        }
+
+        private void DisplayOptions()
+        {
+            if (_currentOrderItems.OfType<Pizza>().Count() > 0)
+            {
+                Console.WriteLine("a: Add extra topping to pizza");
+            }
+            Console.WriteLine("q: Place this order");
+            Console.WriteLine("w: Cancel this order");
+            Console.WriteLine("e: View orders");
+        }
+
+        private void ActOnValidNumberInput(int menuIndex)
+        {
+            var product = _menu[menuIndex - 1];
+            var orderItem = new OrderItem(product.Type, product.Name);
+            AddItemToOrder(orderItem);
+            DisplayMenu();
+        }
+
+        private void ActOnLetterInput(string input)
+        {
+            switch (input)
+            {
+                case "a":
+                    if (OrderContainsPizza()) { DisplayExtraToppingMenu(); }
+                    else goto default;
                     break;
                 case "q":
                     FinishOrder();
                     break;
                 case "w":
-                    currentOrder.Clear();
+                    _currentOrderItems.Clear();
                     SwitchMenu();
                     break;
                 case "e":
                     ViewOrders();
                     break;
                 default:
-                    _console.Clear();
-                    Console.WriteLine("Try again");
-                    _console.ReadKey();
+                    TryAgainMessage();
                     DisplayMenu();
                     break;
             }
         }
 
-        private void DisplayAvailableItemsInMenu()
+        private void DisplayCurrentOrder()
+        {
+            Console.WriteLine();
+            Console.WriteLine($"Current cost: {GetTotalOrderCost(_currentOrder)}:-");
+            Console.WriteLine("Current order items:");
+            for (int i = 0; i < _currentOrderItems.Count; i++)
+            {
+                Product product = _currentOrderItems[i];
+                Console.WriteLine($"{i + 1}: {product.Name}");
+                DisplayPizzaToppings(product);
+            }
+        }
+
+        private void DisplayExtraToppingMenu()
+        {
+            _console.Clear();
+            Console.WriteLine("Choose which topping to add:");
+            Console.WriteLine();
+            var extraToppingsMenu = Menu.Instance.ExtraToppingsMenu;
+            for (int i = 0; i < extraToppingsMenu.Count; i++)
+            {
+                var topping = extraToppingsMenu[i];
+                Console.WriteLine($"{i + 1}: {topping.Name}: {topping.GetPrice()}");
+            } 
+            var input = Console.ReadLine();
+            if (int.TryParse(input, out int menuIndex) && menuIndex <= extraToppingsMenu.Count)
+            {
+                DisplayCurrentPizzasInOrder(extraToppingsMenu[menuIndex - 1]);
+            }
+            else
+            {
+                TryAgainMessage();
+                DisplayExtraToppingMenu();
+            }
+            DisplayMenu();
+        }
+
+        private double GetTotalOrderCost(Order order)
+        {
+            double totalCost = 0;
+            var pizzas = order.ProductItems.OfType<Pizza>().ToList();
+            order.ProductItems.ForEach(item => totalCost += item.GetPrice());
+            pizzas.ForEach(pizza => pizza.ExtraToppings.ForEach(topping => totalCost += topping.GetPrice()));
+            return totalCost;
+        }
+
+        private void DisplayCurrentPizzasInOrder(Topping topping)
+        {
+            _console.Clear();
+            Console.WriteLine("Choose which pizza to add the selected topping to:");
+            var pizzasInOrder = new List<Pizza>();
+            pizzasInOrder.AddRange(from product in _currentOrderItems
+                                   where product.Type == OrderItemType.Pizza
+                                   select (Pizza)product);
+            for (int i = 0; i < pizzasInOrder.Count; i++)
+            {
+                Pizza pizza = pizzasInOrder[i];
+                Console.WriteLine($"{i + 1}: {pizza.Name}");
+            }
+            AddToppingToPizza(topping, pizzasInOrder);
+        }
+
+        private void AddToppingToPizza(Topping topping, List<Pizza> pizzasInOrder)
+        {
+            var input = Console.ReadLine();
+            if (int.TryParse(input, out int menuIndex) && menuIndex <= pizzasInOrder.Count)
+            {
+                var pizza = pizzasInOrder[menuIndex - 1];
+                pizza.ExtraToppings.Add(topping);
+            }
+            else
+            {
+                TryAgainMessage(); 
+                DisplayCurrentPizzasInOrder(topping);
+            }
+        }
+
+        private bool MatchesPizzaOrDrink(string input, out int menuIndex)
+        {
+            return int.TryParse(input, out menuIndex) && menuIndex < _menu.Count && _menu[menuIndex].Type != OrderItemType.Topping;
+        }
+
+        private bool OrderContainsPizza()
+        {
+            return _currentOrderItems.OfType<Pizza>().Count() > 0; 
+        }
+
+        private void DisplayAvailableProductsInMenu()
         {
             Console.WriteLine("Select the desired product:");
-            List<string> pizzasOnMenu = new List<string>()
+            
+            for (int i = 0; i < _menu.Count; i++)
             {
-                "Hawaii",
-                "Kebab pizza",
-                "Margerita",
-                "Quatro Stagioni"
-            };
-            var menu = _pizzaFactory.Get(pizzasOnMenu);
-            for (int i = 0; i < menu.Count; i++)
-            {
-                Console.Write($"{i + 1}: {menu[i].Name}");
-                if (menu[i].GetType() == typeof(Pizza))
+                Product product = _menu[i];
+                if (product.GetType() != typeof(Topping))
                 {
-                    Console.Write("         Toppings: ");
-                    foreach (var topping in menu[i].StandardToppings)
-                    {
-                        Console.Write(topping.Name + ", ");
-                    }
+                    Console.WriteLine($"{i + 1}: {product.Name}  {product.GetPrice()}:-");
+                    DisplayPizzaToppings(product);
                 }
-                Console.WriteLine();
             }
+        }
+
+        private void DisplayPizzaToppings(Product product)
+        {
+            if (product.GetType() == typeof(Pizza))
+            {
+                var toppings = ((Pizza)product).StandardToppings;
+                ((Pizza)product).ExtraToppings.ForEach(topping => toppings.Add(topping));
+                Console.Write("   Toppings: ");
+                for (int i = 0; i < toppings.Count - 1; i++)
+                {
+                    Console.Write(toppings[i].Name + ", ");
+                }
+                Console.WriteLine(toppings[^1].Name);
+            }
+            Console.WriteLine();
         }
 
         private void ViewOrders()
         {
             _console.Clear();
             Console.WriteLine("Orders:");
-            foreach (var order in orders)
+            foreach (var order in _orders)
             {
-                foreach (var product in order)
+                Console.WriteLine($"Order { _orders.IndexOf(order) + 1}: Status: {order.CurrentStatus}");
+                foreach (var product in order.ProductItems)
                 {
                     Console.WriteLine(product.Name);
                 }
@@ -110,34 +225,34 @@ namespace CleanCodeLabb3_Pizzeria
 
         private void FinishOrder()
         {
-            List<OrderItem> tempOrder = new List<OrderItem>();
-            foreach (var product in currentOrder)
-            {
-                tempOrder.Add(product);
-            }
-            orders.Add(tempOrder);
+            _orders.Add(_currentOrder);
+            DisplayFinishedOrder();
+            CreateNewOrder();
+            SwitchMenu();
+        }
+
+        private void DisplayFinishedOrder()
+        {
             _console.Clear();
             Console.WriteLine("The complete order:");
-            foreach (var product in currentOrder)
+            Console.WriteLine(GetTotalOrderCost(_currentOrder) + ":-");
+            foreach (var product in _currentOrderItems)
             {
                 Console.WriteLine(product.Name);
             }
             _console.ReadKey();
-            currentOrder.Clear();
-            SwitchMenu();
         }
 
         private void AddItemToOrder(OrderItem item)
         {
-            currentOrder.Add(item);
-            DisplayMenu();
+            _currentOrderItems.Add(_productFactory.Get(item));
         }
 
         private void SwitchMenu()
         {
             _console.Clear();
             Console.WriteLine("Where to now?");
-            if (currentOrder.Count > 0)
+            if (_currentOrderItems.Count > 0)
             {
                 Console.WriteLine("1: Back to order screen");
             }
@@ -154,13 +269,23 @@ namespace CleanCodeLabb3_Pizzeria
                 case "2":
                     break;
                 default:
-                    Console.WriteLine();
-                    Console.WriteLine("Try again");
-                    _console.ReadKey();
-                    _console.Clear();
+                    TryAgainMessage();
                     SwitchMenu();
                     break;
             }
+        }
+
+        private void CreateNewOrder()
+        {
+            _currentOrder = new Order();
+            _currentOrderItems = _currentOrder.ProductItems;
+        }
+
+        private void TryAgainMessage()
+        {
+            _console.Clear();
+            Console.WriteLine("Incorrect input, try again");
+            _console.ReadKey();
         }
     }
 }
