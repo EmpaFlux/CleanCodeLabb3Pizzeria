@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CleanCodeLabb3_Pizzeria.Factories;
+using CleanCodeLabb3_Pizzeria.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -7,16 +9,10 @@ namespace CleanCodeLabb3_Pizzeria
 {
     public class DisplayText
     {
-        public List<string> currentOrder = new List<string>();
-        List<string> inventory = new List<string>()
-        {
-            "Pizza 1",
-            "Pizza 2",
-            "Pizza 1",
-            "Sprite"
-        };
-        public List<List<string>> orders = new List<List<string>>();
+        public List<OrderItem> currentOrder = new List<OrderItem>();
+        public List<List<OrderItem>> orders = new List<List<OrderItem>>();
         IConsole _console;
+        PizzaFactory _pizzaFactory = PizzaFactory.PizzaFactoryInstance;
 
         public DisplayText(IConsole console)
         {
@@ -26,42 +22,39 @@ namespace CleanCodeLabb3_Pizzeria
         public void DisplayMenu()
         {
             _console.Clear();
-            Console.WriteLine("Select the desired product:");
-            foreach (var product in new List<string> { "1: Pizza 1", "2: Pizza 2", "3: Sprite" })
-            {
-                if (inventory.Contains(product.Substring(3)))
-                {
-                    Console.WriteLine(product);
-                }
-            }
-            Console.WriteLine("4: Finish order");
-            Console.WriteLine("5: Cancel order");
-            Console.WriteLine("6: View current orders");
+            DisplayAvailableItemsInMenu();
+            Console.WriteLine();
+            Console.WriteLine("q: Finish order");
+            Console.WriteLine("w: Cancel order");
+            Console.WriteLine("e: View current orders");
             Console.WriteLine();
             Console.WriteLine("Current order items:");
             foreach (var product in currentOrder)
             {
-                Console.WriteLine(product);
+                Console.WriteLine(product.Name);
             }
             switch (Console.ReadLine())
             {
                 case "1":
-                    AddItemToOrder("Pizza 1");
+                    AddItemToOrder(_pizzaFactory.Get("Hawaii"));
                     break;
                 case "2":
-                    AddItemToOrder("Pizza 2");
+                    AddItemToOrder(_pizzaFactory.Get("Kebab pizza"));
                     break;
                 case "3":
-                    AddItemToOrder("Sprite");
+                    AddItemToOrder(_pizzaFactory.Get("Margerita"));
                     break;
                 case "4":
+                    AddItemToOrder(_pizzaFactory.Get("Quatro Stagioni"));
+                    break;
+                case "q":
                     FinishOrder();
                     break;
-                case "5":
+                case "w":
                     currentOrder.Clear();
                     SwitchMenu();
                     break;
-                case "6":
+                case "e":
                     ViewOrders();
                     break;
                 default:
@@ -73,6 +66,32 @@ namespace CleanCodeLabb3_Pizzeria
             }
         }
 
+        private void DisplayAvailableItemsInMenu()
+        {
+            Console.WriteLine("Select the desired product:");
+            List<string> pizzasOnMenu = new List<string>()
+            {
+                "Hawaii",
+                "Kebab pizza",
+                "Margerita",
+                "Quatro Stagioni"
+            };
+            var menu = _pizzaFactory.Get(pizzasOnMenu);
+            for (int i = 0; i < menu.Count; i++)
+            {
+                Console.Write($"{i + 1}: {menu[i].Name}");
+                if (menu[i].GetType() == typeof(Pizza))
+                {
+                    Console.Write("         Toppings: ");
+                    foreach (var topping in menu[i].StandardToppings)
+                    {
+                        Console.Write(topping.Name + ", ");
+                    }
+                }
+                Console.WriteLine();
+            }
+        }
+
         private void ViewOrders()
         {
             _console.Clear();
@@ -81,7 +100,7 @@ namespace CleanCodeLabb3_Pizzeria
             {
                 foreach (var product in order)
                 {
-                    Console.WriteLine(product);
+                    Console.WriteLine(product.Name);
                 }
                 Console.WriteLine();
             }
@@ -91,7 +110,7 @@ namespace CleanCodeLabb3_Pizzeria
 
         private void FinishOrder()
         {
-            List<string> tempOrder = new List<string>();
+            List<OrderItem> tempOrder = new List<OrderItem>();
             foreach (var product in currentOrder)
             {
                 tempOrder.Add(product);
@@ -101,14 +120,14 @@ namespace CleanCodeLabb3_Pizzeria
             Console.WriteLine("The complete order:");
             foreach (var product in currentOrder)
             {
-                Console.WriteLine(product);
+                Console.WriteLine(product.Name);
             }
             _console.ReadKey();
             currentOrder.Clear();
             SwitchMenu();
         }
 
-        private void AddItemToOrder(string item)
+        private void AddItemToOrder(OrderItem item)
         {
             currentOrder.Add(item);
             DisplayMenu();
@@ -118,7 +137,14 @@ namespace CleanCodeLabb3_Pizzeria
         {
             _console.Clear();
             Console.WriteLine("Where to now?");
-            Console.WriteLine("1: New order");
+            if (currentOrder.Count > 0)
+            {
+                Console.WriteLine("1: Back to order screen");
+            }
+            else
+            {
+                Console.WriteLine("1: New order");
+            }
             Console.WriteLine("2: Shut down");
             switch (Console.ReadLine())
             {

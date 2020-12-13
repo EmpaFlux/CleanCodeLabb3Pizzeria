@@ -1,10 +1,9 @@
 ﻿using CleanCodeLabb3_Pizzeria.Models;
-using CleanCodeLabb3_Pizzeria.Models.Pizzas;
-using CleanCodeLabb3_Pizzeria.Models.Toppings;
 using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using CleanCodeLabb3_Pizzeria.Factories;
 
 namespace CleanCodeLabb3_Pizzeria
 {
@@ -22,15 +21,15 @@ namespace CleanCodeLabb3_Pizzeria
             //}
         }
 
-        public List<List<string>> PlaceOrder(List<OrderItem> order)
-        {
-            var incomingOrder = order;
-            var pizzas = order.OfType<Pizza>().ToList();
-            var names = pizzas.ForEach()
-            var toppings = order.OfType<Topping>().ToList();
-            var price = new List<string>();
-            var orderTally = new List<List<string>>();
-            return orderTally;
-        }
+        //public List<List<string>> PlaceOrder(List<OrderItem> order)
+        //{
+        //    var incomingOrder = order;
+        //    var pizzas = order.OfType<Pizza>().ToList();
+        //    var names = pizzas.ForEach()
+        //    var toppings = order.OfType<Topping>().ToList();
+        //    var price = new List<string>();
+        //    var orderTally = new List<List<string>>();
+        //    return orderTally;
+        //}
     }
 }

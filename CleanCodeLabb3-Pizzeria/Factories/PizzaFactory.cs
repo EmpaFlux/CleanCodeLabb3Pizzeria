@@ -42,7 +42,7 @@ namespace CleanCodeLabb3_Pizzeria.Factories
                     break;
                 case "Quatro Stagioni":
                     pizza.PriceGroup = PizzaPriceGroup.D;
-                    pizza.StandardToppings.AddRange(toppingFactory.Get(new List<string>() { "ham", "shrump", "clam", "mushroom", "artichoke" }));
+                    pizza.StandardToppings.AddRange(toppingFactory.Get(new List<string>() { "ham", "shrimp", "clam", "mushroom", "artichoke" }));
                     break;
                 default:
                     pizza = null;

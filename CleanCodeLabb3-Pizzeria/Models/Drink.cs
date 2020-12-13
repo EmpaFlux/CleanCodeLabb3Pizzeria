@@ -9,7 +9,6 @@ namespace CleanCodeLabb3_Pizzeria.Models
         public Drink(string name, double price)
         {
             Name = name;
-            Price = price;
         }
     }
 }
