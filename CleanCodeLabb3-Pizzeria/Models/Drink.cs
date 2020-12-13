@@ -4,11 +4,16 @@ using System.Text;
 
 namespace CleanCodeLabb3_Pizzeria.Models
 {
-    public class Drink : OrderItem
+    public enum DrinkPriceGroup { A = 20, B = 25}
+    public class Drink : Product
     {
-        public Drink(string name, double price)
-        {
-            Name = name;
-        }
+        private OrderItemType _type = OrderItemType.Drink;
+        private DrinkPriceGroup _drinkPriceGroup;
+
+        public OrderItemType Type { get => _type; }
+
+        public DrinkPriceGroup PriceGroup { get => _drinkPriceGroup; set => _drinkPriceGroup = value; }
+
+        public override double GetPrice() { return (double)PriceGroup; }
     }
 }

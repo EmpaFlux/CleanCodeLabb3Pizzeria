@@ -9,11 +9,11 @@ namespace CleanCodeLabb3_Pizza_Tests
     internal class TestData
     {
       
-        internal static List<OrderItem> GetOrder()
+        internal static List<Product> GetOrder()
         {
             Margerita margerita = new Margerita();
             margerita.ExtraToppings.Add(new Pineapple());
-            List<OrderItem> _order = new List<OrderItem>() { margerita, new Drink("Cola") };
+            List<Product> _order = new List<Product>() { margerita, new Drink("Cola") };
 
             return _order;
         }

@@ -8,7 +8,7 @@ namespace CleanCodeLabb3_Pizzeria.Factories
     public sealed class PizzaFactory : IPizzeriaFactory<Pizza>
     {
         private PizzaFactory() { }
-        public static PizzaFactory PizzaFactoryInstance { get; } = new PizzaFactory();
+        public static PizzaFactory Instance { get; } = new PizzaFactory();
 
         public Pizza Get(string pizzaName)
         {
