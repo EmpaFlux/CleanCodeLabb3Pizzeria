@@ -9,10 +9,6 @@ namespace CleanCodeLabb3_Pizzeria.Models
         private string _name;
         private OrderItemType _type;
 
-        public OrderItem()
-        {
-        }
-
         public OrderItem(OrderItemType type, string name)
         {
             _type = type;

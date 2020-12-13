@@ -12,8 +12,6 @@ namespace CleanCodeLabb3_Pizzeria.Models
         private List<Product> _orderItems = new List<Product>();
         private double totalOrderCost = 0;
 
-        private Dictionary<OrderItemType, string> _incomingRequest;
-
         public Order(List<OrderItem> incoming)
         {
             _orderItems.AddRange(ProductFactory.Instance.Get(incoming));
