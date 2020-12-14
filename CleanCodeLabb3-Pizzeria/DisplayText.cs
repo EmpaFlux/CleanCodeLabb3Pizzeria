@@ -92,7 +92,7 @@ namespace CleanCodeLabb3_Pizzeria
                     break;
                 case "w":
                     _currentOrderItems.Clear();
-                    SwitchMenu();
+                    NavigationSwitch();
                     break;
                 case "e":
                     ViewOrders();
@@ -211,14 +211,15 @@ namespace CleanCodeLabb3_Pizzeria
         {
             if (product.GetType() == typeof(Pizza))
             {
-                var toppings = ((Pizza)product).StandardToppings;
+                var toppings = new List<Topping>();
+                ((Pizza)product).StandardToppings.ForEach(topping => toppings.Add(topping));
                 ((Pizza)product).ExtraToppings.ForEach(topping => toppings.Add(topping));
                 Console.Write("   Toppings: ");
                 for (int i = 0; i < toppings.Count - 1; i++)
                 {
                     Console.Write(toppings[i].Name + ", ");
                 }
-                Console.WriteLine(toppings[^1].Name);
+                Console.WriteLine(toppings[toppings.Count - 1].Name);
             }
             Console.WriteLine();
         }
@@ -226,18 +227,68 @@ namespace CleanCodeLabb3_Pizzeria
         private void ViewOrders()
         {
             _console.Clear();
+            Console.WriteLine("Select order to change status");
+            Console.WriteLine("q: Exit");
             Console.WriteLine("Orders:");
-            foreach (var order in _orders)
+            List<Order> activeOrders = GetActiveOrders();
+            foreach (var order in GetActiveOrders())
             {
-                Console.WriteLine($"Order { _orders.IndexOf(order) + 1}: Status: {order.CurrentStatus}");
+                Console.WriteLine($"{ activeOrders.IndexOf(order) + 1}: Order { activeOrders.IndexOf(order) + 1} Status: {order.CurrentStatus} Cost: {GetTotalOrderCost(order)}:-");
                 foreach (var product in order.ProductItems)
                 {
                     Console.WriteLine(product.Name);
                 }
                 Console.WriteLine();
             }
-            _console.ReadKey();
-            SwitchMenu();
+            var input = Console.ReadLine();
+            if (int.TryParse(input, out int menuIndex) && menuIndex <= activeOrders.Count)
+            {
+                ChangeOrderStatus(activeOrders[menuIndex - 1]);
+            }
+            else if (input == "q")
+            {
+                NavigationSwitch();
+            }
+            else
+            {
+                TryAgainMessage();
+                ViewOrders();
+            }
+        }
+
+        private List<Order> GetActiveOrders()
+        {
+            List<Order> activeOrders = new List<Order>();
+            activeOrders.AddRange(from order in _orders
+                                  where order.CurrentStatus == Status.Active
+                                  select order);
+            return activeOrders;
+        }
+
+        private void ChangeOrderStatus(Order order)
+        {
+            DisplayOrderStatusOptions();
+            switch (Console.ReadLine())
+            {
+                case "1":
+                    order.CurrentStatus = Status.Completed;
+                    break;
+                case "2":
+                    order.CurrentStatus = Status.Aborted;
+                    break;
+                default:
+                    TryAgainMessage();
+                    ChangeOrderStatus(order);
+                    break;
+            }
+            ViewOrders();
+        }
+
+        private void DisplayOrderStatusOptions()
+        {
+            _console.Clear();
+            Console.WriteLine("1: Finish order");
+            Console.WriteLine("2: Cancel order");
         }
 
         private void FinishOrder()
@@ -248,7 +299,7 @@ namespace CleanCodeLabb3_Pizzeria
             pizzaProvider.EndTransmission();
             costProvider.EndTransmission();
             CreateNewOrder();
-            SwitchMenu();
+            NavigationSwitch();
         }
 
         private void DisplayFinishedOrder()
@@ -259,6 +310,7 @@ namespace CleanCodeLabb3_Pizzeria
             foreach (var product in _currentOrderItems)
             {
                 Console.WriteLine(product.Name);
+                DisplayPizzaToppings(product);
             }
             _console.ReadKey();
         }
@@ -268,7 +320,7 @@ namespace CleanCodeLabb3_Pizzeria
             _currentOrderItems.Add(_productFactory.Get(item));
         }
 
-        private void SwitchMenu()
+        private void NavigationSwitch()
         {
             _console.Clear();
             Console.WriteLine("Where to now?");
@@ -290,7 +342,7 @@ namespace CleanCodeLabb3_Pizzeria
                     break;
                 default:
                     TryAgainMessage();
-                    SwitchMenu();
+                    NavigationSwitch();
                     break;
             }
         }
