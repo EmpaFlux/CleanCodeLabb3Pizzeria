@@ -1,5 +1,6 @@
 ﻿using CleanCodeLabb3_Pizzeria.Factories;
 using CleanCodeLabb3_Pizzeria.Models;
+//using CleanCodeLabb3_Pizzeria.ObserverModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,20 @@ namespace CleanCodeLabb3_Pizzeria
         ProductFactory _productFactory;
         List<Product> _menu;
 
+        CostProvider costProvider = new CostProvider();
+        CostObserver accounting = new CostObserver("Accounting");
+        PizzaProvider pizzaProvider = new PizzaProvider();
+        PizzaObserver bakers = new PizzaObserver("Bakers");
+        ResourceProvider resourceProvider = new ResourceProvider();
+        ResourceObserver warehouse = new ResourceObserver("Warehouse");
+
+
+        public void SetObservers()
+        {
+            accounting.Subscribe(costProvider);
+            bakers.Subscribe(pizzaProvider);
+            warehouse.Subscribe(resourceProvider);
+        }
         public DisplayText(IConsole console)
         {
             _orders = new List<Order>();
@@ -30,6 +45,7 @@ namespace CleanCodeLabb3_Pizzeria
         public void DisplayMenu()
         {
             _console.Clear();
+            SetObservers();
             DisplayAvailableProductsInMenu();
             DisplayOptions();
             DisplayCurrentOrder();
@@ -131,6 +147,7 @@ namespace CleanCodeLabb3_Pizzeria
             var pizzas = order.ProductItems.OfType<Pizza>().ToList();
             order.ProductItems.ForEach(item => totalCost += item.GetPrice());
             pizzas.ForEach(pizza => pizza.ExtraToppings.ForEach(topping => totalCost += topping.GetPrice()));
+            costProvider.TrackCost(new Data.OutgoingCost(totalCost));
             return totalCost;
         }
 
@@ -227,6 +244,9 @@ namespace CleanCodeLabb3_Pizzeria
         {
             _orders.Add(_currentOrder);
             DisplayFinishedOrder();
+            resourceProvider.EndTransmission();
+            pizzaProvider.EndTransmission();
+            costProvider.EndTransmission();
             CreateNewOrder();
             SwitchMenu();
         }
