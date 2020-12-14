@@ -1,8 +1,16 @@
-﻿using System;
+﻿using CleanCodeLabb3_Pizzeria.Models;
 
-public class Class1
+public class Observer
 {
-	public Class1()
+	public Observer()
 	{
-	}
+        //CostProvider provider = new CostProvider();
+        //CostObserver accounting = new CostObserver("Accounting");
+        //accounting.Subscribe(provider);
+
+        //Observer representerar Accounting, Storage och Bakers
+
+        Observer Accounting = new Observer();
+        
+    }
 }
