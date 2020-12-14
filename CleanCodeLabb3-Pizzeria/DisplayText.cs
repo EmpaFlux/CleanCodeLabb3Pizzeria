@@ -209,18 +209,58 @@ namespace CleanCodeLabb3_Pizzeria
         private void ViewOrders()
         {
             _console.Clear();
+            Console.WriteLine("Select order to change status");
+            Console.WriteLine("q: Exit");
             Console.WriteLine("Orders:");
             foreach (var order in _orders)
             {
-                Console.WriteLine($"Order { _orders.IndexOf(order) + 1}: Status: {order.CurrentStatus}");
+                Console.WriteLine($"{ _orders.IndexOf(order) + 1}: Order { _orders.IndexOf(order) + 1} Status: {order.CurrentStatus} Cost: {GetTotalOrderCost(order)}");
                 foreach (var product in order.ProductItems)
                 {
                     Console.WriteLine(product.Name);
                 }
                 Console.WriteLine();
             }
-            _console.ReadKey();
-            SwitchMenu();
+            var input = Console.ReadLine();
+            if (int.TryParse(input, out int menuIndex) && menuIndex <= _orders.Count)
+            {
+                ChangeOrderStatus(_orders[menuIndex - 1]);
+            }
+            else if (input == "q")
+            {
+                SwitchMenu();
+            }
+            else
+            {
+                TryAgainMessage();
+                ViewOrders();
+            }
+        }
+
+        private void ChangeOrderStatus(Order order)
+        {
+            DisplayOrderStatusOptions();
+            switch (Console.ReadLine())
+            {
+                case "1":
+                    order.CurrentStatus = Status.Completed;
+                    break;
+                case "2":
+                    order.CurrentStatus = Status.Aborted;
+                    break;
+                default:
+                    TryAgainMessage();
+                    ChangeOrderStatus(order);
+                    break;
+            }
+            ViewOrders();
+        }
+
+        private void DisplayOrderStatusOptions()
+        {
+            _console.Clear();
+            Console.WriteLine("1: Finish order");
+            Console.WriteLine("2: Cancel order");
         }
 
         private void FinishOrder()
@@ -239,6 +279,7 @@ namespace CleanCodeLabb3_Pizzeria
             foreach (var product in _currentOrderItems)
             {
                 Console.WriteLine(product.Name);
+                DisplayPizzaToppings(product);
             }
             _console.ReadKey();
         }
