@@ -24,6 +24,7 @@ namespace CleanCodeLabb3_Pizzeria
         ResourceProvider resourceProvider = new ResourceProvider();
         ResourceObserver warehouse = new ResourceObserver("Warehouse");
 
+        public List<Order> Orders { get => _orders; }
 
         public void SetObservers()
         {
@@ -184,7 +185,7 @@ namespace CleanCodeLabb3_Pizzeria
 
         private bool MatchesPizzaOrDrink(string input, out int menuIndex)
         {
-            return int.TryParse(input, out menuIndex) && menuIndex < _menu.Count && _menu[menuIndex].Type != OrderItemType.Topping;
+            return int.TryParse(input, out menuIndex) && menuIndex <= _menu.Count && _menu[menuIndex - 1].Type != OrderItemType.Topping;
         }
 
         private bool OrderContainsPizza()
@@ -259,7 +260,7 @@ namespace CleanCodeLabb3_Pizzeria
         private List<Order> GetActiveOrders()
         {
             List<Order> activeOrders = new List<Order>();
-            activeOrders.AddRange(from order in _orders
+            activeOrders.AddRange(from order in Orders
                                   where order.CurrentStatus == Status.Active
                                   select order);
             return activeOrders;
@@ -293,7 +294,7 @@ namespace CleanCodeLabb3_Pizzeria
 
         private void FinishOrder()
         {
-            _orders.Add(_currentOrder);
+            Orders.Add(_currentOrder);
             DisplayFinishedOrder();
             resourceProvider.EndTransmission();
             pizzaProvider.EndTransmission();

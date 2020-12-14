@@ -22,7 +22,9 @@ namespace CleanCodeLabb3_Pizza_Tests
         [DataRow(new string[] { "1", "2", "3", "q", "2" }, "Kebab pizza", 1)]
         [DataRow(new string[] { "1", "2", "3", "q", "2" }, "Margerita", 2)]
         [DataRow(new string[] { "1", "2", "4", "q", "2" }, "Quatro Stagioni", 2)]
-        [DataRow(new string[] { "2", "q", "2" }, "Kebab pizza", 0)]
+        [DataRow(new string[] { "5", "q", "2" }, "Coca-Cola", 0)]
+        [DataRow(new string[] { "6", "q", "2" }, "Fanta", 0)]
+        [DataRow(new string[] { "7", "q", "2" }, "Sprite", 0)]
         public void DisplayMenu_AddItemsToOrder_ItemIsAddedToList(string[] inputs, string expected, int indexToCheck)
         {
             string stringReaderInput = inputs[0];
@@ -33,27 +35,9 @@ namespace CleanCodeLabb3_Pizza_Tests
             StringReader sw = new StringReader(stringReaderInput);
             Console.SetIn(sw);
             displayText.DisplayMenu();
-            var actual = displayText.orders[0].ToArray();
+            var actual = displayText.Orders[0].ProductItems[indexToCheck].Name;
 
-            Assert.AreEqual(expected, actual[indexToCheck]);
-        }
-        [DataTestMethod]
-        public void PlaceOrder_ListOfOrderables_ReturnsListOfStringsWithAllToppingsProductsAndPrice()
-        {
-            //Arrange
-            List<OrderItem> order = TestData.GetOrder();
-            var expected = new List<List<string>>() {
-                new List<string>() { "Margerita", "Cola" },
-                new List<string>() { "tomato sauce", "cheese", "pineapple" },
-                new List<string>() { "115.00" }
-            };
-            //var program = new Program();
-
-            //Act
-            //var actual = program.PlaceOrder(order);
-
-            //Assert
-            //Assert.AreEqual(expected, actual);
+            Assert.AreEqual(expected, actual);
         }
     }
 }
